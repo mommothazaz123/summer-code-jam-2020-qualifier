@@ -23,12 +23,28 @@ class ArticleField:
     """The `ArticleField` class for the Advanced Requirements."""
 
     def __init__(self, field_type: typing.Type[typing.Any]):
-        pass
+        self.type = field_type
+
+    def __get__(self, instance, owner):
+        return getattr(instance, f"__articlefield_{self.__name__}")
+
+    def __set__(self, instance, value):
+        if not isinstance(value, self.type):
+            raise TypeError(f"expected an instance of type {self.type.__name__!r} for attribute {self.__name__!r}, "
+                            f"got {type(value).__name__!r} instead")
+        setattr(instance, f"__articlefield_{self.__name__}", value)
+
+    def __set_name__(self, owner, name):
+        self.__name__ = name
 
 
 class Article:
     """The `Article` class you need to write for the qualifier."""
     _article_counter = 0
+    title = ArticleField(str)
+    author = ArticleField(str)
+    publication_date = ArticleField(datetime.datetime)
+    _content = ArticleField(str)
 
     def __init__(self, title: str, author: str, publication_date: datetime.datetime, content: str):
         self.title = title
