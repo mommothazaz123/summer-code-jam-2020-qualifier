@@ -28,12 +28,29 @@ class ArticleField:
 
 class Article:
     """The `Article` class you need to write for the qualifier."""
+    _article_counter = 0
 
     def __init__(self, title: str, author: str, publication_date: datetime.datetime, content: str):
         self.title = title
         self.author = author
         self.publication_date = publication_date
-        self.content = content
+        self._content = content
+
+        # static id counter
+        self.id = Article._article_counter
+        Article._article_counter += 1
+
+        # last edited
+        self.last_edited = None
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        self._content = value
+        self.last_edited = datetime.datetime.now()
 
     def short_introduction(self, n_characters: int):
         considered = self.content[:n_characters + 1]
@@ -50,3 +67,6 @@ class Article:
 
     def __len__(self):
         return len(self.content)
+
+    def __lt__(self, other):
+        return self.publication_date < other.publication_date
