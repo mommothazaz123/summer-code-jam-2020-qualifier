@@ -13,7 +13,9 @@ Important notes for submission:
   remove all debug prints and other debug statements before you submit your
   solution.
 """
+import collections
 import datetime
+import re
 import typing
 
 
@@ -28,4 +30,23 @@ class Article:
     """The `Article` class you need to write for the qualifier."""
 
     def __init__(self, title: str, author: str, publication_date: datetime.datetime, content: str):
-        pass
+        self.title = title
+        self.author = author
+        self.publication_date = publication_date
+        self.content = content
+
+    def short_introduction(self, n_characters: int):
+        considered = self.content[:n_characters + 1]
+        short, _ = considered.rsplit(maxsplit=1)  # splits on any whitespace, not just space or newline (e.g. tab)
+        return short
+
+    def most_common_words(self, n_words: int):
+        counter = collections.Counter(match.group(0).lower() for match in re.finditer(r'\w+', self.content))
+        return dict(counter.most_common(n_words))
+
+    def __repr__(self):
+        return f"<Article title={self.title!r} author={self.author!r} " \
+               f"publication_date={self.publication_date.isoformat()!r}>"
+
+    def __len__(self):
+        return len(self.content)
